@@ -1,0 +1,26 @@
+{
+  "name": "frontdesk",
+  "version": "1.0.0",
+  "description": "Frontdesk — Customer Support Ticket Management System for Arvo Systems",
+  "main": "backend/src/server.js",
+  "scripts": {
+    "start": "node backend/src/server.js",
+    "test": "node backend/tests/systemTests.js && node backend/tests/apiIntegrationTest.js",
+    "test:system": "node backend/tests/systemTests.js",
+    "test:api": "node backend/tests/apiIntegrationTest.js",
+    "seed": "node backend/prisma/seed.js",
+    "build": "cd frontend && npm run build",
+    "build:backend": "cd backend && npx prisma generate",
+    "postinstall": "cd backend && npm install && npx prisma generate && cd ../frontend && npm install"
+  },
+  "keywords": [
+    "ticket-management",
+    "customer-support",
+    "sla-engine",
+    "concurrency-control",
+    "arvo-systems",
+    "frontdesk"
+  ],
+  "author": "Full Stack Developer",
+  "license": "MIT"
+}

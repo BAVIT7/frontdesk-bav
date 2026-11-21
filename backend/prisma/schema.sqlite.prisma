@@ -1,0 +1,162 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Agent {
+  id           String             @id @default(uuid())
+  name         String
+  email        String             @unique
+  passwordHash String
+  role         String             @default("AGENT") // AGENT, LEAD, ADMIN
+  avatar       String?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  assignedTickets Ticket[]        @relation("AssignedAgent")
+  assignments     TicketAssignment[] @relation("AgentAssignments")
+  createdAssignments TicketAssignment[] @relation("AssignedByAgent")
+  internalNotes   InternalNote[]
+  messages        Message[]
+
+  @@map("agents")
+}
+
+model Ticket {
+  id                        String             @id @default(uuid())
+  ticketNumber              String             @unique // e.g. ARVO-1001
+  customerName              String
+  customerEmail             String
+  customerPhone             String?
+  subject                   String
+  description               String
+  priority                  String             @default("MEDIUM") // URGENT, MEDIUM, LOW
+  status                    String             @default("OPEN") // OPEN, IN_PROGRESS, WAITING_CUSTOMER, RESOLVED, CLOSED
+  
+  assignedAgentId           String?
+  assignedAgent             Agent?             @relation("AssignedAgent", fields: [assignedAgentId], references: [id])
+  assignedAt                DateTime?
+
+  createdAt                 DateTime           @default(now())
+  updatedAt                 DateTime           @updatedAt
+  
+  // SLA Fields
+  firstResponseDeadline     DateTime?
+  resolutionDeadline        DateTime?
+  firstResponseAt           DateTime?
+  resolvedAt                DateTime?
+  closedAt                  DateTime?
+  slaPausedAt               DateTime?
+  totalPausedWorkingMinutes Int                @default(0)
+
+  // Version counter for concurrency safety (INC-0291 atomic protection)
+  version                   Int                @default(1)
+
+  // Relationships
+  assignments               TicketAssignment[]
+  messages                  Message[]          // Customer-facing replies
+  internalNotes             InternalNote[]     // Private team notes (INC-0304)
+  auditLogs                 AuditLog[]         // Immutable history (INC-0318)
+  slaEvents                 SLAEvent[]
+
+  @@index([status])
+  @@index([priority])
+  @@index([assignedAgentId])
+  @@map("tickets")
+}
+
+model TicketAssignment {
+  id                String    @id @default(uuid())
+  ticketId          String
+  ticket            Ticket    @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  agentId           String
+  agent             Agent     @relation("AgentAssignments", fields: [agentId], references: [id])
+  assignedByAgentId String?
+  assignedByAgent   Agent?    @relation("AssignedByAgent", fields: [assignedByAgentId], references: [id])
+  assignedAt        DateTime  @default(now())
+  note              String?
+
+  @@index([ticketId])
+  @@index([agentId])
+  @@map("ticket_assignments")
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  ticketId   String
+  ticket     Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  senderType String   // "AGENT" or "CUSTOMER"
+  senderId   String?  // agentId if sent by agent, null if customer
+  sender     Agent?   @relation(fields: [senderId], references: [id])
+  senderName String
+  content    String
+  createdAt  DateTime @default(now())
+
+  @@index([ticketId])
+  @@map("messages")
+}
+
+model InternalNote {
+  id         String   @id @default(uuid())
+  ticketId   String
+  ticket     Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorId   String
+  author     Agent    @relation(fields: [authorId], references: [id])
+  authorName String
+  content    String
+  createdAt  DateTime @default(now())
+
+  @@index([ticketId])
+  @@index([authorId])
+  @@map("internal_notes")
+}
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  ticketId      String
+  ticket        Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  actorType     String   // "AGENT", "CUSTOMER", "SYSTEM"
+  actorId       String?
+  actorName     String
+  action        String   // "CREATED", "ASSIGNED", "STATUS_CHANGE", "PRIORITY_CHANGE", "CUSTOMER_REPLY", "INTERNAL_NOTE", "REOPENED", "AUTO_CLOSED", "SLA_PAUSED", "SLA_RESUMED"
+  previousValue String?  // JSON string
+  newValue      String?  // JSON string
+  description   String
+  createdAt     DateTime @default(now())
+
+  @@index([ticketId])
+  @@index([action])
+  @@map("audit_logs")
+}
+
+model SLAEvent {
+  id                  String    @id @default(uuid())
+  ticketId            String
+  ticket              Ticket    @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  eventType           String    // "INITIAL_CALCULATION", "PAUSE", "RESUME", "PRIORITY_CHANGE", "OVERDUE_BREACH"
+  previousPriority    String?
+  newPriority         String?
+  pausedAt            DateTime?
+  resumedAt           DateTime?
+  workingMinutesAdded Int?
+  reason              String?
+  createdAt           DateTime  @default(now())
+
+  @@index([ticketId])
+  @@map("sla_events")
+}
+
+model Holiday {
+  id          String   @id @default(uuid())
+  name        String
+  date        String   // Format: YYYY-MM-DD
+  description String?
+  createdAt   DateTime @default(now())
+
+  @@unique([date])
+  @@map("holidays")
+}

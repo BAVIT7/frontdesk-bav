@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: frontdesk-arvo-systems
+    runtime: node
+    plan: free
+    buildCommand: "cd backend && npm install && npx prisma generate && cd ../frontend && npm install && npm run build"
+    startCommand: "node backend/src/server.js"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        value: "file:./dev.db" # or attach managed MySQL database URL
+      - key: JWT_SECRET
+        generateValue: true
