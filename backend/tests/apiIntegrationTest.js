@@ -1,14 +1,24 @@
 const http = require('http');
-const { app, server } = require('../src/server');
+const { app } = require('../src/server');
 
 async function testApi() {
   console.log('Testing server endpoints via Node HTTP...');
 
+  // Start test server on ephemeral port (0) to eliminate any port 5000 conflicts
+  const testServer = http.createServer(app);
+
+  await new Promise((resolve) => {
+    testServer.listen(0, '127.0.0.1', resolve);
+  });
+
+  const address = testServer.address();
+  const port = address.port;
+  console.log(`Test server running on port ${port}...`);
+
   function request(path, options = {}) {
     return new Promise((resolve, reject) => {
-      const port = server.address().port;
       const req = http.request({
-        host: 'localhost',
+        host: '127.0.0.1',
         port,
         path,
         method: options.method || 'GET',
@@ -66,7 +76,7 @@ async function testApi() {
     console.error('Integration test failed:', err);
     process.exit(1);
   } finally {
-    server.close();
+    testServer.close();
     process.exit(0);
   }
 }

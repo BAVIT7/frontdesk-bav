@@ -66,13 +66,16 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start Server
-const server = app.listen(config.PORT, () => {
-  console.log(`=================================================`);
-  console.log(`🚀 Frontdesk Server is running on port ${config.PORT}`);
-  console.log(`🏢 Arvo Systems Customer Support Ticket Management`);
-  console.log(`🕒 SLA Working Schedule: 09:30 - 18:30 (Mon - Fri)`);
-  console.log(`=================================================`);
-});
+// Start Server only when executed directly
+let server = null;
+if (require.main === module) {
+  server = app.listen(config.PORT, () => {
+    console.log(`=================================================`);
+    console.log(`🚀 Frontdesk Server is running on port ${config.PORT}`);
+    console.log(`🏢 Arvo Systems Customer Support Ticket Management`);
+    console.log(`🕒 SLA Working Schedule: 09:30 - 18:30 (Mon - Fri)`);
+    console.log(`=================================================`);
+  });
+}
 
 module.exports = { app, server };
