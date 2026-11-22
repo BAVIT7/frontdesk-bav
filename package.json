@@ -8,10 +8,7 @@
     "test": "node backend/tests/systemTests.js && node backend/tests/apiIntegrationTest.js",
     "test:system": "node backend/tests/systemTests.js",
     "test:api": "node backend/tests/apiIntegrationTest.js",
-    "seed": "node backend/prisma/seed.js",
-    "build": "cd frontend && npm run build",
-    "build:backend": "cd backend && npx prisma generate",
-    "postinstall": "cd backend && npm install && npx prisma generate && cd ../frontend && npm install"
+    "build": "cd backend && npm install && npx prisma db push && node prisma/seed.js && cd ../frontend && npm install && npm run build"
   },
   "keywords": [
     "ticket-management",
