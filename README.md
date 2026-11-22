@@ -1,5 +1,4 @@
 # Frontdesk — Customer Support Ticket Management System
-### Built for Arvo Systems (iNav Technologies Full Stack Developer Assessment)
 
 > A production-grade web application replacing the shared spreadsheet and WhatsApp group for Arvo Systems' 9 support agents. Features working-hours SLA tracking, concurrency-safe ticket claiming (INC-0291), private note isolation (INC-0304), and immutable audit history (INC-0318).
 
