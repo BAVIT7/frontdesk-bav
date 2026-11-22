@@ -5,7 +5,7 @@
 
 * 🌐 **Live Application URL:** [https://frontdesk-bav.onrender.com](https://frontdesk-bav.onrender.com)
 * 📦 **GitHub Repository:** [https://github.com/BAVIT7/frontdesk-bav](https://github.com/BAVIT7/frontdesk-bav)
-* 👤 **Candidate:** Bavit Bin O (`bavitbin6@gmail.com` | `+91 98119 70310`)
+* 👤 **Candidate:** Bavit Bin O (`bs07bavit@gmail.com` | `+91 98119 70310`)
 
 ---
 
