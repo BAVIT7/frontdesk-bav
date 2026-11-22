@@ -1,6 +1,11 @@
 # Frontdesk — Customer Support Ticket Management System
+### Built for Arvo Systems (iNav Technologies Full Stack Developer Assessment)
 
 > A production-grade web application replacing the shared spreadsheet and WhatsApp group for Arvo Systems' 9 support agents. Features working-hours SLA tracking, concurrency-safe ticket claiming (INC-0291), private note isolation (INC-0304), and immutable audit history (INC-0318).
+
+* 🌐 **Live Application URL:** [https://frontdesk-bav.onrender.com](https://frontdesk-bav.onrender.com)
+* 📦 **GitHub Repository:** [https://github.com/BAVIT7/frontdesk-bav](https://github.com/BAVIT7/frontdesk-bav)
+* 👤 **Candidate:** Bavit Bin O (`bavitbin6@gmail.com` | `+91 98119 70310`)
 
 ---
 
@@ -29,13 +34,13 @@
 | **Date / Time Engine** | Luxon | Working-hours and timezone math (Asia/Kolkata) |
 | **Security & Auth** | JWT + bcryptjs | Secure agent authentication & password hashing |
 | **Validation** | Zod | Incoming request validation |
-| **Deployment Ready** | Render / Vercel / Railway / Docker | Multi-platform production configs |
+| **Deployment** | Render (Production Container) | Live hosting with persistent zero-downtime container |
 
 ---
 
 ## 3. Demo Agent Accounts (Arvo Systems Support Team)
 
-All 9 accounts are seeded and ready for testing. Password for all accounts: `password123`.
+All 9 accounts are seeded and ready for testing. Password for all accounts: **`password123`**.
 
 | Agent Name | Email | Role | Specialization |
 |---|---|---|---|
@@ -73,7 +78,7 @@ All 9 accounts are seeded and ready for testing. Password for all accounts: `pas
 - **Scenario:** A ticket arrives on **Friday at 6:00 PM** with an **URGENT** priority (2 working hours response SLA).
 - **Calculation:**
   1. Friday has 30 minutes left before close (6:00 PM to 6:30 PM). 30 minutes are consumed.
-  2. Saturday & Sunday do not count against Arvo Systems.
+  2. Saturday & Sunday do not count against Arvo Systems (0 minutes consumed).
   3. Work resumes Monday at 9:30 AM with the remaining 90 minutes.
   4. First response deadline is **Monday at 11:00 AM**.
   5. The system will **never** mark this ticket overdue on Sunday morning.
@@ -85,9 +90,9 @@ All 9 accounts are seeded and ready for testing. Password for all accounts: `pas
 - Both `firstResponseDeadline` and `resolutionDeadline` are pushed forward by the exact working minutes elapsed during the pause.
 
 ### E. Priority Change Recalculation Rule
-- **Documented Rule:** When an agent changes ticket priority from $P_{old}$ to $P_{new}$ at $T_{change}$:
-  - If first response has not yet occurred, a new response deadline is calculated forward from $T_{change}$ using $P_{new}$'s working minutes.
-  - The resolution deadline is recalculated forward from $T_{change}$ using $P_{new}$'s resolution duration.
+- **Documented Rule:** When an agent changes ticket priority from `P_old` to `P_new` at `T_change`:
+  - If first response has not yet occurred, a new response deadline is calculated forward from `T_change` using `P_new`'s working minutes.
+  - The resolution deadline is recalculated forward from `T_change` using `P_new`'s resolution duration.
   - The previous SLA state is snapshotted into `sla_events` and recorded in the immutable audit log for full auditability.
 
 ### F. Inactivity Auto-Closure
@@ -95,7 +100,7 @@ All 9 accounts are seeded and ready for testing. Password for all accounts: `pas
 
 ### G. 7-Day Reopening Window
 - If a customer is dissatisfied after a ticket is marked `RESOLVED`, it may be reopened within **7 calendar days**.
-- If $> 7\text{ days}$ have elapsed, reopening is blocked with the error: *"Reopening window (7 days) has expired under Arvo Systems policy. A new ticket must be created."*
+- If more than 7 days have elapsed, reopening is blocked with the error: *"Reopening window (7 days) has expired under Arvo Systems policy. A new ticket must be created."*
 
 ---
 
@@ -145,8 +150,8 @@ All 9 accounts are seeded and ready for testing. Password for all accounts: `pas
 ### Quick Start (Under 2 Minutes)
 1. Clone the repository and navigate to the project directory:
    ```bash
-   git clone <repo-url>
-   cd frontdesk
+   git clone https://github.com/BAVIT7/frontdesk-bav.git
+   cd frontdesk-bav
    ```
 
 2. Install dependencies:
@@ -196,7 +201,7 @@ To switch from local SQLite to hosted MySQL (e.g. Railway, PlanetScale, Aiven, o
 
 ## 8. Automated Test Suite Results
 
-Run `npm test` inside `backend/` to verify all 8 core test suites:
+Run `npm test` inside `backend/` or the root to verify all core test suites:
 ```
 ====================================================
 🧪 RUNNING FRONTDESK AUTOMATED SYSTEM VALIDATION TEST
